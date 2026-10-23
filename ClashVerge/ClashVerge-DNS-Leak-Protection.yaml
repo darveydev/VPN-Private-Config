@@ -1,0 +1,287 @@
+# ================================================================
+# ClashVerge / Mihomo DNS Leak Protection Config v1.0
+#
+# This file provides the core DNS / TUN / network-switching
+# configuration for ClashVerge. It is meant to be used as
+# a "merge" or "override" config that supplements (not
+# replaces) your airport subscription.
+#
+# In ClashVerge, set this as your override config:
+#   Settings → Profiles → Local Override → Import this file
+#
+# Architecture:
+#
+#   App DNS query (UDP/TCP 53)
+#          ↓
+#   TUN dns-hijack intercepts ALL :53 traffic
+#          ↓
+#   Mihomo internal DNS resolver (fake-ip mode)
+#          ↓
+#   ┌─────────────────────────────────────────────────────┐
+#   │  Domain type          →  DNS server               │
+#   │                                                       │
+#   │  proxy-server         →  domestic DoH (direct)      │
+#   │  (node hostname)         no proxy needed            │
+#   │                                                       │
+#   │  CN / private        →  domestic DoH (direct)       │
+#   │  (DIRECT traffic)       no DNS leak                │
+#   │                                                       │
+#   │  foreign            →  Cloudflare/Google DoH       │
+#   │  (proxy traffic)       via proxy tunnel            │
+#   │                                                       │
+#   │  fallback           →  Cloudflare/Google DoH       │
+#   │  (poisoned results)    via proxy tunnel            │
+#   └─────────────────────────────────────────────────────┘
+#
+# ================================================================
+
+# ================================================================
+# 1. Basic
+# ================================================================
+
+mixed-port: 7890
+mode: rule
+unified-delay: true
+tcp-concurrent: true
+log-level: error
+ipv6: false
+allow-lan: false
+find-process-mode: always
+
+# Keep-alive: shorter intervals for faster reconnection
+# after Wi-Fi ↔ Cellular network switching.
+keep-alive-interval: 15
+keep-alive-idle: 15
+disable-keep-alive: false
+
+# ================================================================
+# 2. Profile
+# ================================================================
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# ================================================================
+# 3. DNS — DNS Leak Protection
+# ================================================================
+
+dns:
+  enable: true
+  listen: "0.0.0.0:53"
+
+  # Disable HTTP/3 (QUIC) for DNS.
+  # QUIC is fragile during Wi-Fi ↔ Cellular switching.
+  prefer-h3: false
+  ipv6: false
+
+  # fake-ip: proxied domains never get real DNS resolution.
+  enhanced-mode: fake-ip
+  fake-ip-range: 172.19.0.1/16
+
+  # Domains that must NOT receive a fake-ip.
+  # These need real IPs for connectivity checks, push
+  # notifications, and captive portal detection.
+  fake-ip-filter:
+    - "+.lan"
+    - "+.local"
+    - "+.localhost"
+    - "+.home.arpa"
+
+    # NTP
+    - "time.*.com"
+    - "time.*.gov"
+    - "pool.ntp.org"
+
+    # Apple push & captive portal
+    - "+.push.apple.com"
+    - "mesu.apple.com"
+    - "swscan.apple.com"
+    - "captive.apple.com"
+    - "gsp1.apple.com"
+    - "gsp-ssl.apple.com"
+
+    # Android / Google connectivity check
+    - "connectivitycheck.gstatic.com"
+    - "connectivitycheck.android.com"
+    - "captive.gstatic.com"
+
+    # Windows connectivity check
+    - "www.msftconnecttest.com"
+    - "www.msftncsi.com"
+
+  # Bootstrap DNS: ONLY for resolving DoH server hostnames.
+  # Must be plain IP-based DNS.
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  # Main nameserver: foreign domains via encrypted DoH.
+  # These DoH queries go through the proxy tunnel — no leak.
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google.com/dns-query
+
+  # Policy: route specific domain categories to specific DNS.
+  nameserver-policy:
+    # Chinese domains → domestic DoH (direct)
+    "geosite:cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+
+    # Private/LAN domains → domestic DoH
+    "geosite:private":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+
+    # Foreign domains → foreign DoH via proxy
+    "geolocation-!cn":
+      - https://cloudflare-dns.com/dns-query
+      - https://dns.google/dns-query
+
+  # Proxy server node domain resolution.
+  # Uses domestic DoH directly — node hostnames must be
+  # resolved WITHOUT going through the proxy itself.
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+
+  # Direct (DIRECT rule) domain resolution.
+  # Uses domestic DoH directly — prevents DIRECT domains
+  # from leaking through proxy or ISP DNS.
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+
+  # Fallback: used when main resolver fails or returns
+  # suspicious results. Foreign DoH via proxy.
+  fallback:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google.com/dns-query
+
+  # Fallback filter: determines when to use fallback DNS.
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    geosite:
+      - gfw
+    domain:
+      - "+.google.com"
+      - "+.googleapis.com"
+      - "+.googlevideo.com"
+      - "+.youtube.com"
+      - "+.github.com"
+      - "+.openai.com"
+      - "+.chatgpt.com"
+      - "+.anthropic.com"
+      - "+.claude.ai"
+
+# ================================================================
+# 4. TUN — Transparent proxy with DNS hijack
+# ================================================================
+
+tun:
+  enable: true
+  device: "ClashVerge"
+  stack: gvisor
+
+  # Hijack ALL DNS (UDP + TCP) on port 53.
+  # This catches hardcoded DNS queries from apps.
+  dns-hijack:
+    - "0.0.0.0:53"
+    - "tcp://0.0.0.0:53"
+
+  # auto-route: install default route through TUN
+  auto-route: true
+
+  # auto-detect-interface: CRITICAL for network switching.
+  # When Wi-Fi ↔ Cellular changes, the default outbound
+  # interface changes. With this enabled, Mihomo automatically
+  # rebinds to the new interface — no VPN toggle needed.
+  auto-detect-interface: true
+
+  # strict-route: prevent any traffic from bypassing TUN
+  strict-route: true
+
+  mtu: 1280
+  inet4-address:
+    - "172.19.0.1/30"
+  auto-redirect: false
+  disable-icmp-forwarding: true
+
+# ================================================================
+# 5. Sniffer — Domain-based routing from IP connections
+# ================================================================
+
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  force-dns-mapping: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports:
+        - 80
+        - "8080-8880"
+    TLS:
+      ports:
+        - 443
+        - 8443
+    QUIC:
+      ports:
+        - 443
+        - 8443
+  skip-domain:
+    - "+.push.apple.com"
+    - "+.mijia.cloud"
+
+# ================================================================
+# 6. NTP — Network Time Protocol (for cert validation)
+# ================================================================
+
+ntp:
+  enable: true
+  write-to-system: false
+  server: "time.apple.com"
+  port: 123
+  interval: 30
+
+# ================================================================
+# 7. Rules — DNS leak protection rules
+#
+# These rules are ordered to ensure DNS-related traffic is
+# handled correctly. Airport subscription rules will be
+# appended after these.
+# ================================================================
+
+rules:
+  # ----------------------------------------------------------
+  # Private / LAN
+  # ----------------------------------------------------------
+  - DOMAIN-SUFFIX,lan,DIRECT
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,localhost,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+
+  # ----------------------------------------------------------
+  # DNS leak test sites → proxy (so they see proxy DNS)
+  # ----------------------------------------------------------
+  - DOMAIN-SUFFIX,dnsleaktest.com,PROXY
+  - DOMAIN-SUFFIX,ipleak.net,PROXY
+  - DOMAIN-SUFFIX,browserleaks.com,PROXY
+
+  # ----------------------------------------------------------
+  # China direct (uses geosite/geoip from subscription)
+  # ----------------------------------------------------------
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,cn,DIRECT
+  - GEOIP,cn,DIRECT,no-resolve
+
+  # ----------------------------------------------------------
+  # Final: everything else through proxy
+  # ----------------------------------------------------------
+  - MATCH,PROXY
