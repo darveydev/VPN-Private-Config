@@ -1,21 +1,25 @@
 #!name=ThreadsHideAds
 #!desc=Threads / Instagram 信息流内置广告拦截（GraphQL + API 双通道，语义化识别）
 #!author=darveydev
-#!arguments=启用调试模式:false, 仅处理信息流:true, 同时屏蔽推荐内容:false
-#!arguments-desc=\n▶ 参数说明：\n\n- 启用调试模式：在 Surge 日志中输出命中的 URL 与删除条数，排查问题时打开，默认关闭。\n- 仅处理信息流：开启后只处理白名单内的信息流接口，避免影响登录、评论、消息、上传等请求。强烈建议保持开启。\n- 同时屏蔽推荐内容：在广告之外，额外移除 netego（推荐用户 / 推荐帖子 / 探索卡片）等非广告插入内容，默认关闭。\n\n⚠️ 首次使用需安装并信任 Surge 的 MITM 根证书，否则无法解密 HTTPS 内容。
+#!arguments=启用调试模式:false, 仅处理信息流:true, 同时屏蔽推荐内容:false, 诊断未知广告字段:false
+#!arguments-desc=\n▶ 参数说明：\n\n- 启用调试模式：在 Surge 日志输出命中的 URL 与删除条数，排查问题时打开，默认关闭。\n- 仅处理信息流：开启后只处理白名单内的信息流接口，避免影响登录、评论、消息、上传等请求。强烈建议保持开启。\n- 同时屏蔽推荐内容：在广告之外，额外移除 netego（推荐用户 / 推荐帖子 / 探索卡片）等非广告插入内容，默认关闭。\n- 诊断未知广告字段：仍有广告漏过时打开，日志会列出「字段名像广告但没被识别」的键路径，把日志发给我即可精准补齐规则。\n\n⚠️ 首次使用需安装并信任 Surge 的 MITM 根证书，否则无法解密 HTTPS 内容。\n⚠️ 若同时装有其它针对 instagram.com 的 http-response 脚本，同一响应只会执行「配置中靠前的第一个」，请把本模块排到前面。
 
 [Script]
 # ─────────────────────────────────────────────────────────────────────────────
 # 脚本位置：与本 .module 文件放在同一目录（Surge 配置目录）即可直接生效。
-# 若使用远程托管，把 script-path 换成 raw 链接，例如：
+# 远程托管时把 script-path 换成 raw 链接，例如：
 #   script-path=https://raw.githubusercontent.com/<user>/<repo>/main/ThreadsHideAds.js
+#
+# max-size：Surge 的 max-size 是「缓冲上限字节数」，-1 表示不限制。
+#   旧版本写成 0 会导致任何非空响应都被判为超限而跳过脚本（这就是之前完全没生效的原因）。
+#   这里设为 4 MB，足够覆盖信息流响应，同时避免 iOS 上内存占用过高。
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Threads：网页版 /api/graphql、/graphql/query，App 版 /api/v1/text_post_app_timeline
-threads.ads.response = type=http-response,pattern=^https:\/\/(?:www\.)?threads\.net\/(?:api\/graphql|graphql|api\/v1\/),requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/darveydev/VPN-Private-Config/refs/heads/main/modules/ThreadsHideAds.js,argument={"debug":{{{启用调试模式}}},"feedOnly":{{{仅处理信息流}}},"blockSuggested":{{{同时屏蔽推荐内容}}}
+threads.ads.response = type=http-response,pattern=^https:\/\/(?:www\.)?threads\.net\/(?:api\/graphql|graphql|api\/v1\/),requires-body=true,max-size=4194304,script-path=ThreadsHideAds.js,argument={"debug":{{{启用调试模式}}},"feedOnly":{{{仅处理信息流}}},"blockSuggested":{{{同时屏蔽推荐内容}}},"diagnose":{{{诊断未知广告字段}}}
 
-# Instagram：网页版 /graphql/query、App 版 /api/v1/feed、Reels、探索页
-instagram.ads.response = type=http-response,pattern=^https:\/\/(?:www\.|i\.|b\.i\.|graph\.)?instagram\.com\/(?:api\/v1\/(?:feed|clips|discover|explore|loops)|graphql|api\/graphql),requires-body=true,max-size=0,script-path=https://raw.githubusercontent.com/darveydev/VPN-Private-Config/refs/heads/main/modules/ThreadsHideAds.js,argument={"debug":{{{启用调试模式}}},"feedOnly":{{{仅处理信息流}}},"blockSuggested":{{{同时屏蔽推荐内容}}}
+# Instagram：网页版 /api/graphql、/graphql/query，App 版 /api/v1/feed、Reels、探索页
+instagram.ads.response = type=http-response,pattern=^https:\/\/(?:www\.|i\.|b\.i\.|graph\.)?instagram\.com\/(?:api\/v1\/(?:feed|clips|discover|explore|loops)|graphql|api\/graphql),requires-body=true,max-size=4194304,script-path=ThreadsHideAds.js,argument={"debug":{{{启用调试模式}}},"feedOnly":{{{仅处理信息流}}},"blockSuggested":{{{同时屏蔽推荐内容}}},"diagnose":{{{诊断未知广告字段}}}
 
 [MITM]
 hostname = %APPEND% threads.net, www.threads.net, instagram.com, www.instagram.com, i.instagram.com, b.i.instagram.com, graph.instagram.com
