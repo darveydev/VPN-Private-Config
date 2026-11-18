@@ -126,42 +126,64 @@ proxy-groups:
   - {name: 🎮 Steam, type: select, proxies: [🔯 香港故转, 🔯 日本故转, 🔯 狮城故转, 🔯 美国故转, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🌐 全部节点, 直连]}
   - {name: 🍎 Apple, type: select, proxies: [🔯 香港故转, 🔯 日本故转, 🔯 狮城故转, 🔯 美国故转, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🌐 全部节点, 直连]}
   - {name: 🐟 漏网之鱼, type: select, proxies: [🚀 默认代理, 🔯 香港故转, 🔯 日本故转, 🔯 狮城故转, 🔯 美国故转, ♻️ 香港自动, ♻️ 日本自动, ♻️ 狮城自动, ♻️ 美国自动, ♻️ 自动选择, 🇭🇰 香港节点, 🇯🇵 日本节点, 🇸🇬 狮城节点, 🇺🇲 美国节点, 🌐 全部节点, 直连]}
+  
+  # ==================== 香港 ====================
   - {name: 🇭🇰 香港节点, type: select, include-all: true, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: 🇯🇵 日本节点, type: select, include-all: true, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
-  - {name: 🇸🇬 狮城节点, type: select, include-all: true, filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$"}
-  - {name: 🇺🇲 美国节点, type: select, include-all: true, filter: "(?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$"}
   - {name: 🔯 香港故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: 🔯 日本故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
-  - {name: 🔯 狮城故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(台|日|韩|深|美)).)*$"}
-  - {name: 🔯 美国故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(美|US|(?i)States|America))^((?!(港|台|韩|新|日)).)*$"}
   - {name: ♻️ 香港自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
+
+  # ==================== 台湾 ====================
+  - {name: 🇼🇸 台湾节点, type: select, include-all: true, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
+  - {name: 🔯 台湾故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
+  - {name: ♻️ 台湾自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
+
+  # ==================== 日本 ====================
+  - {name: 🇯🇵 日本节点, type: select, include-all: true, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
+  - {name: 🔯 日本故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
   - {name: ♻️ 日本自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
-  - {name: ♻️ 狮城自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(港|台|韩|日|美)).)*$"}
-  - {name: ♻️ 美国自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(美|US|(?i)States|America))^((?!(港|台|日|韩|新)).)*$"}
+
+  # ==================== 韩国 ====================
+  - {name: 🇰🇷 韩国节点, type: select, include-all: true, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
+  - {name: 🔯 韩国故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
+  - {name: ♻️ 韩国自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
+
+  # ==================== 新加坡 ====================
+  - {name: 🇸🇬 新加坡节点, type: select, include-all: true, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
+  - {name: 🔯 新加坡故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
+  - {name: ♻️ 新加坡自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
+
+  # ==================== 北美 ====================
+  - {name: 🌎 北美节点, type: select, include-all: true, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
+  - {name: 🔯 北美故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
+  - {name: ♻️ 北美自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
+
+  # ==================== 东南亚 ====================
+  - {name: 🌏 东南亚节点, type: select, include-all: true, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
+  - {name: 🔯 东南亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
+  - {name: ♻️ 东南亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
+
+  # ==================== 南亚 ====================
+  - {name: 🇮🇳 南亚节点, type: select, include-all: true, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
+  - {name: 🔯 南亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
+  - {name: ♻️ 南亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
+
+  # ==================== 欧亚 ====================
+  - {name: 🇹🇷 欧亚节点, type: select, include-all: true, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
+  - {name: 🔯 欧亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
+  - {name: ♻️ 欧亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
+
+  # ==================== 欧洲 ====================
+  - {name: 🇪🇺 欧洲节点, type: select, include-all: true, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
+  - {name: 🔯 欧洲故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
+  - {name: ♻️ 欧洲自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
+
+  # ==================== 港澳 ====================
+  - {name: 🇭🇰 港澳节点, type: select, include-all: true, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
+  - {name: 🔯 港澳故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
+  - {name: ♻️ 港澳自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
+
   - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^((?!(直连)).)*$"}
   - {name: 🌐 全部节点, type: select, include-all: true}
-  # 🇭🇰 HK
-  - {name: "🇭🇰 HK", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇭🇰)|(香港)|(港)|(Hong Kong)|(Hong)|(HK)'}
-  # 🇼🇸 TW
-  - {name: "🇼🇸 TW", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇼🇸)|(台湾)|(台)|(Taiwan)|(Tai)|(TW)'}
-  # 🇯🇵 JP
-  - {name: "🇯🇵 JP", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇯🇵)|(日本)|(日)|(Japan)|(JP)|(Tokyo)|(Osaka)|(东京)|(大阪)'}
-  # 🇰🇷 KR
-  - {name: "🇰🇷 KR", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇰🇷)|(韩国)|(韩)|(Korea)|(KR)|(Seoul)|(首尔)'}
-  # 🇸🇬 SG
-  - {name: "🇸🇬 SG", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇸🇬)|(新加坡)|(新)|(Singapore)|(SG)|(Singaporean)'}
-  # 🌎 North America
-  - {name: "🌎 North America", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇺🇸)|(🇨🇦)|(美国)|(美)|(United States)|(United States of America)|(USA)|(US)|(Los Angeles)|(LA)|(San Francisco)|(SF)|(New York)|(NY)|(Seattle)|(Chicago)|(Miami)|(Canada)|(加拿大)|(Canadian)|(CA)|(Toronto)|(Vancouver)|(Montreal)'}
-  # 🌏 South East Asia
-  - {name: "🌏 South East Asia", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇸🇬)|(新加坡)|(新)|(Singapore)|(SG)|(🇲🇾)|(马来西亚)|(马来)|(Malaysia)|(MY)|(Kuala Lumpur)|(吉隆坡)|(🇹🇭)|(泰国)|(泰)|(Thailand)|(TH)|(Bangkok)|(曼谷)|(🇻🇳)|(越南)|(越)|(Vietnam)|(VN)|(Hanoi)|(Ho Chi Minh)|(河内)|(胡志明)|(🇮🇩)|(印尼)|(印度尼西亚)|(Indonesia)|(ID)|(Jakarta)|(雅加达)|(🇵🇭)|(菲律宾)|(菲)|(Philippines)|(PH)|(Manila)|(马尼拉)|(🇰🇭)|(柬埔寨)|(柬)|(Cambodia)|(KH)|(Phnom Penh)'}
-  # 🇮🇳 South Asia
-  - {name: "🇮🇳 South Asia", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇮🇳)|(印度)|(India)|(IN)|(Mumbai)|(孟买)|(Delhi)|(New Delhi)|(新德里)|(Bangalore)|(班加罗尔)'}
-  # 🇹🇷 Eurasia
-  - {name: "🇹🇷 Eurasia", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇹🇷)|(土耳其)|(Turkey)|(Turkiye)|(TR)|(Istanbul)|(伊斯坦布尔)'}
-  # 🇪🇺 Europe
-  - {name: "🇪🇺 Europe", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇬🇧)|(🇩🇪)|(🇫🇷)|(🇸🇪)|(🇳🇱)|(🇱🇹)|(🇧🇬)|(英国)|(英)|(United Kingdom)|(UK)|(London)|(伦敦)|(Germany)|(德国)|(德)|(DE)|(Frankfurt)|(法兰克福)|(France)|(法国)|(法)|(FR)|(Paris)|(巴黎)|(Sweden)|(瑞典)|(SE)|(Stockholm)|(斯德哥尔摩)|(Netherlands)|(荷兰)|(NL)|(Amsterdam)|(阿姆斯特丹)|(Lithuania)|(立陶宛)|(LT)|(Vilnius)|(Bulgaria)|(保加利亚)|(BG)|(Sofia)|(索非亚)'}
-  # 🇭🇰🇲🇴 HK/MO
-  - {name: "🇭🇰🇲🇴 HK/MO", type: url-test, include-all: true, tolerance: 30, interval: 600, timeout: 10, url: "https://www.gstatic.com/generate_204", filter: '(🇭🇰)|(🇲🇴)|(香港)|(港)|(Hong Kong)|(Hong)|(HK)|(澳门)|(澳)|(Macau)|(Macao)|(MO)'}
 
 # 规则匹配
 rules:
