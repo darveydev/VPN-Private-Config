@@ -11,15 +11,6 @@ proxy-providers:
       url: https://www.gstatic.com/generate_204
       interval: 300
     proxy: 直连
-  赔钱机场:
-      url: "https://dasho.xn--cp3a08l.com/api/v1/pq/8058728e94b291b67262e63e87d7c657"
-      type: http
-      interval: 0
-      health-check:
-        enable: true
-        url: https://www.gstatic.com/generate_204
-        interval: 300
-      proxy: 直连
 
 # 节点信息
 proxies:
@@ -85,8 +76,8 @@ dns:
 
   # 仅用于启动/解析 DNS 上游域名的引导解析；不是普通网站域名的默认解析出口
   default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
+    - 1.1.1.1
+    - 1.0.0.1
 
   # 未命中国内域名策略的请求默认经专用代理组访问海外 DoH，避免回退到明文/运营商 DNS
   nameserver:
@@ -95,13 +86,15 @@ dns:
 
   # 使用本配置已存在的规则集分类
   nameserver-policy:
-    "rule-set:cn_domain,private_domain":
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
+    "rule-set:cn_domain":
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    "rule-set:private_domain":
+      - "https://dns.alidns.com/dns-query"
     "rule-set:cn!_domain":
       - "https://dns.google/dns-query#🔒 DNS专用"
       - "https://cloudflare-dns.com/dns-query#🔒 DNS专用"
-
+    
   # 只负责解析代理节点域名，避免代理节点尚未建立时出现 DNS 循环依赖
   proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
@@ -111,79 +104,560 @@ dns:
 # 如果相应分组没有筛选到对应的国家，请根据自己节点名字调整筛选关键字。
 # 没有再使用锚点和icon图标，是考虑很多新手修改难度，这样新手修改某个分组更容易些。
 proxy-groups:
-  - {name: "🔒 DNS专用", type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🚀 默认代理, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 📹 YouTube, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🍀 Google, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🤖 AI, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 👨🏿‍💻 GitHub, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🐬 OneDrive, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🪟 Microsoft, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🎵 TikTok, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 📲 Telegram, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🎥 NETFLIX, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 💶 Wallet, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🎮 Steam, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🍎 Apple, type: select, proxies: [🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  - {name: 🐟 漏网之鱼, type: select, proxies: [🚀 默认代理, 🔯 香港故转, 🔯 台湾故转, 🔯 日本故转, 🔯 韩国故转, 🔯 新加坡故转, 🔯 北美故转, 🔯 东南亚故转, 🔯 南亚故转, 🔯 欧亚故转, 🔯 欧洲故转, 🔯 港澳故转, ♻️ 香港自动, ♻️ 台湾自动, ♻️ 日本自动, ♻️ 韩国自动, ♻️ 新加坡自动, ♻️ 北美自动, ♻️ 东南亚自动, ♻️ 南亚自动, ♻️ 欧亚自动, ♻️ 欧洲自动, ♻️ 港澳自动, 🇭🇰 香港节点, 🇼🇸 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🇸🇬 新加坡节点, 🇺🇸 北美节点, 🇮🇩 东南亚节点, 🇮🇳 南亚节点, 🇹🇷 欧亚节点, 🇪🇺 欧洲节点, 🇭🇰 港澳节点, ♻️ 自动选择, 🌐 全部节点, 直连]}
-  
-  # ==================== 香港 ====================
-  - {name: 🇭🇰 香港节点, type: select, include-all: true, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: 🔯 香港故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
-  - {name: ♻️ 香港自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
+  # =========================================================
+  # 01. 应用分流组
+  # =========================================================
 
-  # ==================== 台湾 ====================
-  - {name: 🇼🇸 台湾节点, type: select, include-all: true, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
-  - {name: 🔯 台湾故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
-  - {name: ♻️ 台湾自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(台|TW|(?i)Taiwan))^((?!(港|日|韩|新|美)).)*$"}
+  - name: "🔒 DNS专用"
+    type: select
+    proxies: &main-proxies
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 韩国故转
+      - 🔯 新加坡故转
+      - 🔯 北美故转
+      - 🔯 东南亚故转
+      - 🔯 南亚故转
+      - 🔯 欧亚故转
+      - 🔯 欧洲故转
+      - 🔯 港澳故转
+      - ♻️ 香港自动
+      - ♻️ 台湾自动
+      - ♻️ 日本自动
+      - ♻️ 韩国自动
+      - ♻️ 新加坡自动
+      - ♻️ 北美自动
+      - ♻️ 东南亚自动
+      - ♻️ 南亚自动
+      - ♻️ 欧亚自动
+      - ♻️ 欧洲自动
+      - ♻️ 港澳自动
+      - 🇭🇰 香港节点
+      - 🇼🇸 台湾节点
+      - 🇯🇵 日本节点
+      - 🇰🇷 韩国节点
+      - 🇸🇬 新加坡节点
+      - 🇺🇸 北美节点
+      - 🇮🇩 东南亚节点
+      - 🇮🇳 南亚节点
+      - 🇹🇷 欧亚节点
+      - 🇪🇺 欧洲节点
+      - 🇭🇰 港澳节点
+      - ♻️ 自动选择
+      - 🌐 全部节点
+      - 直连
 
-  # ==================== 日本 ====================
-  - {name: 🇯🇵 日本节点, type: select, include-all: true, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
-  - {name: 🔯 日本故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
-  - {name: ♻️ 日本自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$"}
+  - name: "🚀 默认代理"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 韩国 ====================
-  - {name: 🇰🇷 韩国节点, type: select, include-all: true, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
-  - {name: 🔯 韩国故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
-  - {name: ♻️ 韩国自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(韩|KR|(?i)Korea|Seoul|首尔))^((?!(港|台|日|新|美)).)*$"}
+  - name: "📹 YouTube"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 新加坡 ====================
-  - {name: 🇸🇬 新加坡节点, type: select, include-all: true, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
-  - {name: 🔯 新加坡故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
-  - {name: ♻️ 新加坡自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|(?i)Singapore))^((?!(港|台|日|韩|美)).)*$"}
+  - name: "🍀 Google"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 北美 ====================
-  - {name: 🌎 北美节点, type: select, include-all: true, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
-  - {name: 🔯 北美故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
-  - {name: ♻️ 北美自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇺🇸|🇨🇦|美国|美|(?i)United States|USA|US|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|加拿大|(?i)Canada|Toronto|Vancouver|Montreal))"}
+  - name: "🤖 AI"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 东南亚 ====================
-  - {name: 🌏 东南亚节点, type: select, include-all: true, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
-  - {name: 🔯 东南亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
-  - {name: ♻️ 东南亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(马来西亚|马来|MY|(?i)Malaysia|Kuala Lumpur|吉隆坡|泰国|泰|TH|(?i)Thailand|Bangkok|曼谷|越南|越|VN|(?i)Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|ID|(?i)Indonesia|Jakarta|雅加达|菲律宾|菲|PH|(?i)Philippines|Manila|马尼拉|柬埔寨|柬|KH|(?i)Cambodia))"}
+  - name: "👨🏿‍💻 GitHub"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 南亚 ====================
-  - {name: 🇮🇳 南亚节点, type: select, include-all: true, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
-  - {name: 🔯 南亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
-  - {name: ♻️ 南亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇮🇳|印度|IN|(?i)India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔))"}
+  - name: "🐬 OneDrive"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 欧亚 ====================
-  - {name: 🇹🇷 欧亚节点, type: select, include-all: true, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
-  - {name: 🔯 欧亚故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
-  - {name: ♻️ 欧亚自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇹🇷|土耳其|TR|(?i)Turkey|Turkiye|Istanbul|伊斯坦布尔))"}
+  - name: "🪟 Microsoft"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 欧洲 ====================
-  - {name: 🇪🇺 欧洲节点, type: select, include-all: true, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
-  - {name: 🔯 欧洲故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
-  - {name: ♻️ 欧洲自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬|英国|英|UK|(?i)United Kingdom|London|伦敦|德国|德|DE|(?i)Germany|Frankfurt|法兰克福|法国|法|FR|(?i)France|Paris|巴黎|瑞典|SE|(?i)Sweden|Stockholm|斯德哥尔摩|荷兰|NL|(?i)Netherlands|Amsterdam|阿姆斯特丹|立陶宛|LT|(?i)Lithuania|Vilnius|保加利亚|BG|(?i)Bulgaria|Sofia|索非亚))"}
+  - name: "🎵 TikTok"
+    type: select
+    proxies: *main-proxies
 
-  # ==================== 港澳 ====================
-  - {name: 🇭🇰 港澳节点, type: select, include-all: true, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
-  - {name: 🔯 港澳故转, type: fallback, include-all: true, interval: 300, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
-  - {name: ♻️ 港澳自动, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(港|HK|(?i)Hong|澳门|澳|MO|(?i)Macau|Macao))"}
+  - name: "📲 Telegram"
+    type: select
+    proxies: *main-proxies
 
-  - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^((?!(直连)).)*$"}
-  - {name: 🌐 全部节点, type: select, include-all: true}
+  - name: "🎥 NETFLIX"
+    type: select
+    proxies: *main-proxies
+
+  - name: "💶 Wallet"
+    type: select
+    proxies: *main-proxies
+
+  - name: "🎮 Steam"
+    type: select
+    proxies: *main-proxies
+
+  - name: "🍎 Apple"
+    type: select
+    proxies: *main-proxies
+
+  - name: "🐟 漏网之鱼"
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 韩国故转
+      - 🔯 新加坡故转
+      - 🔯 北美故转
+      - 🔯 东南亚故转
+      - 🔯 南亚故转
+      - 🔯 欧亚故转
+      - 🔯 欧洲故转
+      - 🔯 港澳故转
+      - ♻️ 香港自动
+      - ♻️ 台湾自动
+      - ♻️ 日本自动
+      - ♻️ 韩国自动
+      - ♻️ 新加坡自动
+      - ♻️ 北美自动
+      - ♻️ 东南亚自动
+      - ♻️ 南亚自动
+      - ♻️ 欧亚自动
+      - ♻️ 欧洲自动
+      - ♻️ 港澳自动
+      - 🇭🇰 香港节点
+      - 🇼🇸 台湾节点
+      - 🇯🇵 日本节点
+      - 🇰🇷 韩国节点
+      - 🇸🇬 新加坡节点
+      - 🇺🇸 北美节点
+      - 🇮🇩 东南亚节点
+      - 🇮🇳 南亚节点
+      - 🇹🇷 欧亚节点
+      - 🇪🇺 欧洲节点
+      - 🇭🇰 港澳节点
+      - ♻️ 自动选择
+      - 🌐 全部节点
+      - 直连
+
+  # =========================================================
+  # 02. 香港
+  # =========================================================
+
+  - name: "🇭🇰 香港节点"
+    type: select
+    include-all: true
+    filter: '(?i)(香港|港|Hong Kong|HongKong|🇭🇰|HK)'
+
+  - name: "🔯 香港故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(香港|港|Hong Kong|HongKong|🇭🇰|HK)'
+
+  - name: "♻️ 香港自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(香港|港|Hong Kong|HongKong|🇭🇰|HK)'
+
+  # =========================================================
+  # 03. 台湾
+  # =========================================================
+
+  - name: "🇼🇸 台湾节点"
+    type: select
+    include-all: true
+    filter: '(?i)(台湾|台北|Taiwan|Taipei|🇼🇸|TW)'
+
+  - name: "🔯 台湾故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(台湾|台北|Taiwan|Taipei|🇼🇸|TW)'
+
+  - name: "♻️ 台湾自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(台湾|台北|Taiwan|Taipei|🇼🇸|TW)'
+
+  # =========================================================
+  # 04. 日本
+  # =========================================================
+
+  - name: "🇯🇵 日本节点"
+    type: select
+    include-all: true
+    filter: '(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|🇯🇵|JP)'
+
+  - name: "🔯 日本故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|🇯🇵|JP)'
+
+  - name: "♻️ 日本自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(日本|东京|大阪|Japan|Tokyo|Osaka|🇯🇵|JP)'
+
+  # =========================================================
+  # 05. 韩国
+  # =========================================================
+
+  - name: "🇰🇷 韩国节点"
+    type: select
+    include-all: true
+    filter: '(?i)(韩国|首尔|Korea|Seoul|🇰🇷|KR)'
+
+  - name: "🔯 韩国故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(韩国|首尔|Korea|Seoul|🇰🇷|KR)'
+
+  - name: "♻️ 韩国自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(韩国|首尔|Korea|Seoul|🇰🇷|KR)'
+
+  # =========================================================
+  # 06. 新加坡
+  # =========================================================
+
+  - name: "🇸🇬 新加坡节点"
+    type: select
+    include-all: true
+    filter: '(?i)(新加坡|狮城|Singapore|🇸🇬|SG)'
+
+  - name: "🔯 新加坡故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(新加坡|狮城|Singapore|🇸🇬|SG)'
+
+  - name: "♻️ 新加坡自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(新加坡|狮城|Singapore|🇸🇬|SG)'
+
+  # =========================================================
+  # 07. 北美
+  # =========================================================
+
+  - name: "🇺🇸 北美节点"
+    type: select
+    include-all: true
+    filter: '(?i)(美国|加拿大|USA|United States|Canada|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|Toronto|Vancouver|Montreal|🇺🇸|🇨🇦)'
+
+  - name: "🔯 北美故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(美国|加拿大|USA|United States|Canada|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|Toronto|Vancouver|Montreal|🇺🇸|🇨🇦)'
+
+  - name: "♻️ 北美自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(美国|加拿大|USA|United States|Canada|Los Angeles|San Francisco|New York|Seattle|Chicago|Miami|Toronto|Vancouver|Montreal|🇺🇸|🇨🇦)'
+
+  # =========================================================
+  # 08. 东南亚总组
+  # =========================================================
+
+  - name: "🇮🇩 东南亚节点"
+    type: select
+    proxies:
+      - 🇲🇾 马来西亚节点
+      - 🇹🇭 泰国节点
+      - 🇻🇳 越南节点
+      - 🇮🇩 印尼节点
+      - 🇵🇭 菲律宾节点
+      - 🇰🇭 柬埔寨节点
+
+  - name: "🔯 东南亚故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(马来西亚|Malaysia|Kuala Lumpur|吉隆坡|泰国|Thailand|Bangkok|曼谷|越南|Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|Indonesia|Jakarta|雅加达|菲律宾|Philippines|Manila|马尼拉|柬埔寨|Cambodia|Phnom Penh|金边|🇲🇾|🇹🇭|🇻🇳|🇮🇩|🇵🇭|🇰🇭)'
+
+  - name: "♻️ 东南亚自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(马来西亚|Malaysia|Kuala Lumpur|吉隆坡|泰国|Thailand|Bangkok|曼谷|越南|Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|印尼|印度尼西亚|Indonesia|Jakarta|雅加达|菲律宾|Philippines|Manila|马尼拉|柬埔寨|Cambodia|Phnom Penh|金边|🇲🇾|🇹🇭|🇻🇳|🇮🇩|🇵🇭|🇰🇭)'
+
+  # =========================================================
+  # 09. 马来西亚
+  # =========================================================
+
+  - name: "🇲🇾 马来西亚节点"
+    type: select
+    include-all: true
+    filter: '(?i)(马来西亚|Malaysia|Kuala Lumpur|吉隆坡|🇲🇾)'
+
+  - name: "🔯 马来西亚故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(马来西亚|Malaysia|Kuala Lumpur|吉隆坡|🇲🇾)'
+
+  - name: "♻️ 马来西亚自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(马来西亚|Malaysia|Kuala Lumpur|吉隆坡|🇲🇾)'
+
+  # =========================================================
+  # 10. 泰国
+  # =========================================================
+
+  - name: "🇹🇭 泰国节点"
+    type: select
+    include-all: true
+    filter: '(?i)(泰国|Thailand|Bangkok|曼谷|🇹🇭)'
+
+  - name: "🔯 泰国故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(泰国|Thailand|Bangkok|曼谷|🇹🇭)'
+
+  - name: "♻️ 泰国自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(泰国|Thailand|Bangkok|曼谷|🇹🇭)'
+
+  # =========================================================
+  # 11. 越南
+  # =========================================================
+
+  - name: "🇻🇳 越南节点"
+    type: select
+    include-all: true
+    filter: '(?i)(越南|Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|🇻🇳)'
+
+  - name: "🔯 越南故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(越南|Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|🇻🇳)'
+
+  - name: "♻️ 越南自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(越南|Vietnam|Hanoi|河内|Ho Chi Minh|胡志明|🇻🇳)'
+
+  # =========================================================
+  # 12. 印尼
+  # =========================================================
+
+  - name: "🇮🇩 印尼节点"
+    type: select
+    include-all: true
+    filter: '(?i)(印尼|印度尼西亚|Indonesia|Jakarta|雅加达|🇮🇩)'
+
+  - name: "🔯 印尼故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(印尼|印度尼西亚|Indonesia|Jakarta|雅加达|🇮🇩)'
+
+  - name: "♻️ 印尼自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(印尼|印度尼西亚|Indonesia|Jakarta|雅加达|🇮🇩)'
+
+  # =========================================================
+  # 13. 菲律宾
+  # =========================================================
+
+  - name: "🇵🇭 菲律宾节点"
+    type: select
+    include-all: true
+    filter: '(?i)(菲律宾|Philippines|Manila|马尼拉|🇵🇭)'
+
+  - name: "🔯 菲律宾故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(菲律宾|Philippines|Manila|马尼拉|🇵🇭)'
+
+  - name: "♻️ 菲律宾自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(菲律宾|Philippines|Manila|马尼拉|🇵🇭)'
+
+  # =========================================================
+  # 14. 柬埔寨
+  # =========================================================
+
+  - name: "🇰🇭 柬埔寨节点"
+    type: select
+    include-all: true
+    filter: '(?i)(柬埔寨|Cambodia|Phnom Penh|金边|🇰🇭)'
+
+  - name: "🔯 柬埔寨故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(柬埔寨|Cambodia|Phnom Penh|金边|🇰🇭)'
+
+  - name: "♻️ 柬埔寨自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(柬埔寨|Cambodia|Phnom Penh|金边|🇰🇭)'
+
+  # =========================================================
+  # 15. 南亚
+  # =========================================================
+
+  - name: "🇮🇳 南亚节点"
+    type: select
+    include-all: true
+    filter: '(?i)(印度|India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔|🇮🇳)'
+
+  - name: "🔯 南亚故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(印度|India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔|🇮🇳)'
+
+  - name: "♻️ 南亚自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(印度|India|Mumbai|孟买|Delhi|New Delhi|新德里|Bangalore|班加罗尔|🇮🇳)'
+
+  # =========================================================
+  # 16. 欧亚（土耳其）
+  # =========================================================
+
+  - name: "🇹🇷 欧亚节点"
+    type: select
+    include-all: true
+    filter: '(?i)(土耳其|Turkey|Turkiye|Istanbul|伊斯坦布尔|🇹🇷)'
+
+  - name: "🔯 欧亚故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(土耳其|Turkey|Turkiye|Istanbul|伊斯坦布尔|🇹🇷)'
+
+  - name: "♻️ 欧亚自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(土耳其|Turkey|Turkiye|Istanbul|伊斯坦布尔|🇹🇷)'
+
+  # =========================================================
+  # 17. 欧洲
+  # =========================================================
+
+  - name: "🇪🇺 欧洲节点"
+    type: select
+    include-all: true
+    filter: '(?i)(英国|United Kingdom|London|伦敦|德国|Germany|Frankfurt|法兰克福|法国|France|Paris|巴黎|瑞典|Sweden|Stockholm|斯德哥尔摩|荷兰|Netherlands|Amsterdam|阿姆斯特丹|立陶宛|Lithuania|Vilnius|保加利亚|Bulgaria|Sofia|索非亚|🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬)'
+
+  - name: "🔯 欧洲故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(英国|United Kingdom|London|伦敦|德国|Germany|Frankfurt|法兰克福|法国|France|Paris|巴黎|瑞典|Sweden|Stockholm|斯德哥尔摩|荷兰|Netherlands|Amsterdam|阿姆斯特丹|立陶宛|Lithuania|Vilnius|保加利亚|Bulgaria|Sofia|索非亚|🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬)'
+
+  - name: "♻️ 欧洲自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(英国|United Kingdom|London|伦敦|德国|Germany|Frankfurt|法兰克福|法国|France|Paris|巴黎|瑞典|Sweden|Stockholm|斯德哥尔摩|荷兰|Netherlands|Amsterdam|阿姆斯特丹|立陶宛|Lithuania|Vilnius|保加利亚|Bulgaria|Sofia|索非亚|🇬🇧|🇩🇪|🇫🇷|🇸🇪|🇳🇱|🇱🇹|🇧🇬)'
+
+  # =========================================================
+  # 18. 澳门
+  # =========================================================
+
+  - name: "🇲🇴 澳门节点"
+    type: select
+    include-all: true
+    filter: '(?i)(澳门|Macau|Macao|🇲🇴|MO)'
+
+  - name: "🔯 澳门故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(澳门|Macau|Macao|🇲🇴|MO)'
+
+  - name: "♻️ 澳门自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(澳门|Macau|Macao|🇲🇴|MO)'
+
+  # =========================================================
+  # 19. 港澳合并
+  # =========================================================
+
+  - name: "🇭🇰 港澳节点"
+    type: select
+    proxies:
+      - 🇭🇰 香港节点
+      - 🇲🇴 澳门节点
+
+  - name: "🔯 港澳故转"
+    type: fallback
+    include-all: true
+    interval: 300
+    filter: '(?i)(香港|港|Hong Kong|HongKong|🇭🇰|HK|澳门|Macau|Macao|🇲🇴|MO)'
+
+  - name: "♻️ 港澳自动"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '(?i)(香港|港|Hong Kong|HongKong|🇭🇰|HK|澳门|Macau|Macao|🇲🇴|MO)'
+
+  # =========================================================
+  # 20. 全局自动测速和全部节点
+  # =========================================================
+
+  - name: "♻️ 自动选择"
+    type: url-test
+    include-all: true
+    tolerance: 20
+    interval: 300
+    filter: '^(?!.*(直连)).*$'
+
+  - name: "🌐 全部节点"
+    type: select
+    include-all: true
+
 
 # 规则匹配
 rules:
