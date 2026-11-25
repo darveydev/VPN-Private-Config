@@ -1,0 +1,842 @@
+# ============================================================
+# OpenClash Stable - GL-MT6000 Optimized Edition
+# DNS Leak Protection + Dual Providers + Smart Failover
+# Based on qichiyuhub Mihomo DNS architecture
+# ============================================================
+
+# ==================== 1. Proxy Providers ====================
+
+proxy-providers:
+  Now加速-Gmail:
+    type: http
+    url: "https://nowjump.tiaotiao.org/https://hi.nowjiasu.com/now/746bdbd82bc54c8f59d47d0afe6a764c"
+    interval: 0
+    proxy: 直连
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+      lazy: true
+
+  赔钱机场:
+    type: http
+    url: "https://dasho.xn--cp3a08l.com/api/v1/pq/8058728e94b291b67262e63e87d7c657"
+    interval: 0
+    proxy: 直连
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+      lazy: true
+
+# ==================== 2. Hosts ====================
+
+hosts:
+  "dns.alidns.com":
+    - 223.5.5.5
+    - 223.6.6.6
+  "doh.pub":
+    - 1.12.12.12
+    - 120.53.53.53
+  "cloudflare-dns.com":
+    - 1.1.1.1
+    - 1.0.0.1
+  "dns.google":
+    - 8.8.8.8
+    - 8.8.4.4
+
+# ==================== 3. General ====================
+
+proxies:
+  - name: 直连
+    type: direct
+    udp: true
+
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+ipv6: false
+
+mode: rule
+log-level: info
+unified-delay: true
+tcp-concurrent: true
+
+keep-alive-idle: 600
+keep-alive-interval: 15
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# 管理面板：仅允许可信 LAN 访问
+external-controller: 0.0.0.0:9090
+secret: "请替换为你自己生成的随机高强度密钥"
+external-ui: ui
+external-ui-name: zashboard
+external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
+
+# ==================== 4. Sniffer ====================
+
+sniffer:
+  enable: true
+  override-destination: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+
+  sniff:
+    HTTP:
+      ports:
+        - 80
+        - 8080-8880
+
+    TLS:
+      ports:
+        - 443
+        - 8443
+
+    QUIC:
+      ports:
+        - 443
+        - 8443
+
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+# ==================== 5. TUN ====================
+
+tun:
+  enable: true
+  stack: mips
+
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+
+# ==================== 6. DNS Leak Protection ====================
+
+dns:
+  enable: true
+
+  # DNS 缓存
+  cache-algorithm: arc
+
+  # 不解析 IPv6 DNS 记录
+  ipv6: false
+
+  # 使用 Fake-IP
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.0/16
+  fake-ip-ttl: 1
+  fake-ip-filter-mode: blacklist
+
+  # 禁止使用系统 DNS 作为隐式备用路径
+  use-system-hosts: false
+
+  # DNS 引导服务器
+  # 必须使用 IP，避免 DoH 域名解析循环
+  default-nameserver:
+    - 223.5.5.5
+    - 223.6.6.6
+
+  # 国内 DNS：负责解析代理节点服务器域名
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+
+  # 国内直连 DNS
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query#disable-qtype-65=true
+    - https://doh.pub/dns-query#disable-qtype-65=true
+
+  # 直连域名解析遵循 nameserver-policy
+  direct-nameserver-follow-policy: true
+
+  # 默认国外 DNS
+  # 强制通过默认代理策略组访问
+  nameserver:
+    - "https://dns.google/dns-query#🚀 默认代理&disable-qtype-65=true"
+
+  # 国外备用 DNS
+  fallback:
+    - "https://cloudflare-dns.com/dns-query#🚀 默认代理&disable-qtype-65=true"
+
+  # 备用 DNS 污染判断
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/32
+      - 127.0.0.1/32
+
+  # 国内、私有、特殊服务域名使用国内 DNS
+  nameserver-policy:
+    "rule-set:cn_domain,private_domain,fakeipfilter_cn,steamcn_domain,microsoftcn_domain,applecn_domain":
+      - https://dns.alidns.com/dns-query#disable-qtype-65=true
+      - https://doh.pub/dns-query#disable-qtype-65=true
+
+    # 特定非中国域名使用海外 DNS
+    "rule-set:fakeipfilter_!cn":
+      - "https://dns.google/dns-query#🚀 默认代理&disable-qtype-65=true"
+
+  # Fake-IP 过滤规则
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.home"
+    - "*.internal"
+    - "localhost"
+    - "+.localhost"
+    - "time.*.com"
+    - "time.*.gov"
+    - "+.ntp.org"
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+    # 国内域名
+    - "rule-set:fakeipfilter_cn"
+    - "rule-set:cn_domain"
+
+    # 非国内特殊域名
+    - "rule-set:fakeipfilter_!cn"
+
+    # 私有及国内服务
+    - "rule-set:private_domain"
+    - "rule-set:applecn_domain"
+    - "rule-set:microsoftcn_domain"
+    - "rule-set:steamcn_domain"
+
+# ==================== 7. Proxy Groups ====================
+
+# 默认代理
+proxy-groups:
+
+  # ==================== Main Groups ====================
+
+  - name: 🚀 默认代理
+    type: fallback
+    proxies:
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - ♻️ 欧洲自动
+      - 🎯 手动选择
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 欧洲自动
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 📹 YouTube
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 美国故转
+      - 🔯 台湾故转
+      - 🔯 香港故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🍀 Google
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🤖 AI
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 日本故转
+      - 🔯 台湾故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 香港故转
+      - 🔯 欧洲故转
+      - ♻️ 欧洲自动
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 👨🏿‍💻 GitHub
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🐬 OneDrive
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 日本故转
+      - 🔯 台湾故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 香港故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🪟 Microsoft
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 日本故转
+      - 🔯 台湾故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 香港故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🎵 TikTok
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 日本故转
+      - 🔯 台湾故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 香港故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 📲 Telegram
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🎥 NETFLIX
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 狮城故转
+      - 🔯 台湾故转
+      - 🔯 香港故转
+      - 🔯 日本故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 💶 Wallet
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 日本故转
+      - 🔯 台湾故转
+      - 🔯 香港故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🎮 Steam
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  - name: 🍎 Apple
+    type: select
+    proxies:
+      - 🚀 默认代理
+      - 🔯 香港故转
+      - 🔯 台湾故转
+      - 🔯 日本故转
+      - 🔯 狮城故转
+      - 🔯 美国故转
+      - 🔯 欧洲故转
+      - ♻️ 自动选择
+      - 🎯 手动选择
+      - 直连
+
+  # ==================== Global Groups ====================
+
+  - name: 🎯 手动选择
+    type: select
+    include-all: true
+
+  - name: ♻️ 自动选择
+    type: url-test
+    include-all: true
+    filter: "(?i)(港|香港|HK|Hong|台|台湾|TW|Taiwan|日|日本|JP|Japan|韩|韩国|KR|Korea|新加坡|狮城|SG|Singapore|美|美国|US|USA|America|Europe|欧洲|德国|法国|英国|荷兰|意大利|西班牙)"
+    tolerance: 50
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  # ==================== Region Failover ====================
+
+  - name: 🔯 香港故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(香港|港|HK|Hong Kong|HongKong)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🔯 台湾故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(台湾|台灣|台北|台中|高雄|TW|Taiwan|Taipei)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🔯 日本故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(日本|东京|大阪|福冈|东京|JP|Japan|Tokyo|Osaka)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🔯 狮城故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(新加坡|狮城|SG|Singapore)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🔯 美国故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(美国|美|US|USA|America|United States|洛杉矶|纽约|西雅图|硅谷|圣何塞|芝加哥|达拉斯)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  - name: 🔯 欧洲故转
+    type: fallback
+    include-all: true
+    filter: "(?i)(欧洲|欧盟|英国|德国|法国|荷兰|瑞士|意大利|西班牙|瑞典|挪威|芬兰|丹麦|波兰|奥地利|比利时|爱尔兰|土耳其|希腊|葡萄牙|卢森堡|罗马尼亚|捷克|匈牙利|冰岛|UK|GB|DE|FR|NL|CH|IT|ES|SE|NO|FI|DK|PL|AT|BE|IE|TR|GR|PT|LU|RO|CZ|HU|IS|Europe|Euro|Germany|France|Netherlands|Switzerland|Italy|Spain|Sweden|Norway|Finland|Denmark|Poland|Austria|Belgium|Ireland|Turkey|Greece|Portugal|United Kingdom)"
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+
+  # ==================== Region Auto-Test ====================
+
+  - name: ♻️ 香港自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(香港|港|HK|Hong Kong|HongKong)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  - name: ♻️ 台湾自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(台湾|台灣|台北|台中|高雄|TW|Taiwan|Taipei)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  - name: ♻️ 日本自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(日本|东京|大阪|福冈|JP|Japan|Tokyo|Osaka)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  - name: ♻️ 狮城自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(新加坡|狮城|SG|Singapore)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  - name: ♻️ 美国自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(美国|美|US|USA|America|United States|洛杉矶|纽约|西雅图|硅谷|圣何塞|芝加哥|达拉斯)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  - name: ♻️ 欧洲自动
+    type: url-test
+    include-all: true
+    filter: "(?i)(欧洲|欧盟|英国|德国|法国|荷兰|瑞士|意大利|西班牙|瑞典|挪威|芬兰|丹麦|波兰|奥地利|比利时|爱尔兰|土耳其|希腊|葡萄牙|卢森堡|罗马尼亚|捷克|匈牙利|冰岛|UK|GB|DE|FR|NL|CH|IT|ES|SE|NO|FI|DK|PL|AT|BE|IE|TR|GR|PT|LU|RO|CZ|HU|IS|Europe|Euro|Germany|France|Netherlands|Switzerland|Italy|Spain|Sweden|Norway|Finland|Denmark|Poland|Austria|Belgium|Ireland|Turkey|Greece|Portugal|United Kingdom)"
+    tolerance: 20
+    interval: 300
+    url: https://www.gstatic.com/generate_204
+    lazy: true
+
+  # ==================== Region Manual Groups ====================
+
+  - name: 🇭🇰 香港节点
+    type: select
+    include-all: true
+    filter: "(?i)(香港|港|HK|Hong Kong|HongKong)"
+
+  - name: 🇹🇼 台湾节点
+    type: select
+    include-all: true
+    filter: "(?i)(台湾|台灣|台北|台中|高雄|TW|Taiwan|Taipei)"
+
+  - name: 🇯🇵 日本节点
+    type: select
+    include-all: true
+    filter: "(?i)(日本|东京|大阪|福冈|JP|Japan|Tokyo|Osaka)"
+
+  - name: 🇸🇬 狮城节点
+    type: select
+    include-all: true
+    filter: "(?i)(新加坡|狮城|SG|Singapore)"
+
+  - name: 🇺🇸 美国节点
+    type: select
+    include-all: true
+    filter: "(?i)(美国|美|US|USA|America|United States|洛杉矶|纽约|西雅图|硅谷|圣何塞|芝加哥|达拉斯)"
+
+  - name: 🇪🇺 欧洲节点
+    type: select
+    include-all: true
+    filter: "(?i)(欧洲|欧盟|英国|德国|法国|荷兰|瑞士|意大利|西班牙|瑞典|挪威|芬兰|丹麦|波兰|奥地利|比利时|爱尔兰|土耳其|希腊|葡萄牙|卢森堡|罗马尼亚|捷克|匈牙利|冰岛|UK|GB|DE|FR|NL|CH|IT|ES|SE|NO|FI|DK|PL|AT|BE|IE|TR|GR|PT|LU|RO|CZ|HU|IS|Europe|Euro|Germany|France|Netherlands|Switzerland|Italy|Spain|Sweden|Norway|Finland|Denmark|Poland|Austria|Belgium|Ireland|Turkey|Greece|Portugal|United Kingdom)"
+
+# ==================== 8. Routing Rules ====================
+
+rules:
+  # 非国内 UDP 443 禁止 QUIC，优先使用 TCP
+  - AND,((RULE-SET,cn!_domain),(DST-PORT,443),(NETWORK,UDP)),REJECT
+
+  # 私有网络
+  - RULE-SET,private_ip,直连,no-resolve
+  - RULE-SET,private_domain,直连
+
+  # AI
+  - RULE-SET,ai_domain,🤖 AI
+
+  # Google / YouTube / GitHub
+  - RULE-SET,youtube_domain,📹 YouTube
+  - RULE-SET,google_domain,🍀 Google
+  - RULE-SET,github_domain,👨🏿‍💻 GitHub
+
+  # Microsoft
+  - RULE-SET,onedrive_domain,🐬 OneDrive
+  - RULE-SET,microsoftcn_domain,直连
+  - RULE-SET,microsoft_domain,🪟 Microsoft
+
+  # Apple
+  - RULE-SET,applecn_domain,直连
+  - RULE-SET,apple_domain,🍎 Apple
+
+  # Social
+  - RULE-SET,telegram_domain,📲 Telegram
+  - RULE-SET,tiktok_domain,🎵 TikTok
+
+  # Streaming
+  - RULE-SET,netflix_domain,🎥 NETFLIX
+
+  # Wallet
+  - RULE-SET,paypal_domain,💶 Wallet
+  - RULE-SET,binance_domain,💶 Wallet
+  - RULE-SET,okx_domain,💶 Wallet
+  - RULE-SET,usd_domain,💶 Wallet
+
+  # Steam
+  - RULE-SET,steamcn_domain,直连
+  - RULE-SET,steam_domain,🎮 Steam
+
+  # Domestic
+  - RULE-SET,cn!_domain,🚀 默认代理
+
+  # IP rules
+  - RULE-SET,google_ip,🍀 Google
+  - RULE-SET,apple_ip,🍎 Apple
+  - RULE-SET,telegram_ip,📲 Telegram
+  - RULE-SET,netflix_ip,🎥 NETFLIX
+
+  - RULE-SET,cn_ip,直连,no-resolve
+
+  # Final
+  - MATCH,🐟 漏网之鱼
+
+# ==================== 9. Rule Providers ====================
+
+rule-providers:
+
+  # Fake-IP Filters
+  fakeipfilter_cn:
+    type: http
+    behavior: domain
+    format: text
+    interval: 86400
+    url: "https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/fakeipfilter-cn.list"
+
+  fakeipfilter_!cn:
+    type: http
+    behavior: domain
+    format: text
+    interval: 86400
+    url: "https://raw.githubusercontent.com/qichiyuhub/rule/refs/heads/main/rules/fakeipfilter-!cn.list"
+
+  # Domain Rule Sets
+  private_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/private.mrs"
+
+  ai_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-!cn.mrs"
+
+  youtube_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/youtube.mrs"
+
+  google_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/google.mrs"
+
+  github_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/github.mrs"
+
+  onedrive_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/onedrive.mrs"
+
+  microsoftcn_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft@cn.mrs"
+
+  microsoft_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/microsoft.mrs"
+
+  applecn_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple@cn.mrs"
+
+  apple_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/apple.mrs"
+
+  telegram_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs"
+
+  tiktok_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/tiktok.mrs"
+
+  netflix_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/netflix.mrs"
+
+  paypal_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/paypal.mrs"
+
+  binance_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/binance.mrs"
+
+  okx_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/okx.mrs"
+
+  usd_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-cryptocurrency.mrs"
+
+  steamcn_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam@cn.mrs"
+
+  steam_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/steam.mrs"
+
+  cn!_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/geolocation-!cn.mrs"
+
+  cn_domain:
+    type: http
+    behavior: domain
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cn.mrs"
+
+  # IP Rule Sets
+  google_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/google.mrs"
+
+  apple_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo-lite/geoip/apple.mrs"
+
+  telegram_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/telegram.mrs"
+
+  netflix_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/netflix.mrs"
+
+  cn_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cn.mrs"
+
+  private_ip:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    interval: 86400
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/private.mrs"
