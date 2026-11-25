@@ -9,7 +9,7 @@
 proxy-providers:
   Now加速-Gmail:
     type: http
-    url: "https://nowjump.tiaotiao.org/https://hi.nowjiasu.com/now/746bdbd82bc54c8f59d47d0afe6a764c"
+    url: "https://nowjump.tiaotiao.org/https://hi.nowjiasu.com/now/"
     interval: 0
     proxy: 直连
     health-check:
@@ -20,7 +20,7 @@ proxy-providers:
 
   赔钱机场:
     type: http
-    url: "https://dasho.xn--cp3a08l.com/api/v1/pq/8058728e94b291b67262e63e87d7c657"
+    url: "https://dasho.xn--cp3a08l.com/api/v1/pq/"
     interval: 0
     proxy: 直连
     health-check:
