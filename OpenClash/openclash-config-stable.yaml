@@ -4,7 +4,7 @@
 # 机场订阅  
 proxy-providers:
   Now加速-Gmail:
-    url: "https://nowjump.tiaotiao.org/https://hi.nowjiasu.com/now/746bdbd82bc54c8f59d47d0afe6a764c"
+    url: "https://nowjump.tiaotiao.org/https://hi.nowjiasu.com/now/"
     type: http
     # 手动更新
     interval: 0
@@ -15,7 +15,7 @@ proxy-providers:
       lazy: false
     proxy: 直连
   赔钱机场:
-    url: "https://dasho.xn--cp3a08l.com/api/v1/pq/8058728e94b291b67262e63e87d7c657"
+    url: "https://dasho.xn--cp3a08l.com/api/v1/pq/"
     type: http
     interval: 0
     health-check:
